@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from flask_restful import Resource, Api
+from werkzeug.datastructures import ImmutableMultiDict
 
 app = Flask(__name__)
 
@@ -23,40 +24,13 @@ def status():
    global botao
    global ip
    if request.method == 'POST':
-      status = request.form
-      # print(status)
-      chunks = status['LED'].split(",")
+      status = request.form.to_dict()
 
-      # print(chunks)
-
-      potenciometro = chunks[0]
-      botao_antigo = chunks[1]
-      botao = botao_antigo[6:]
-      if botao == "0":
-         botao = "nao apertado"
-      if botao == "1":
-         botao = "apertado"
-      ts_antigo = chunks[2]
-      ts = ts_antigo[3:]
-      ip_antigo = chunks[3] 
-      ip = ip_antigo[3:]
-
-      # print(potenciometro)
-      # print(botao)
-      # print(ts)
-
-
-
-      # potenciometro1 = status['potenciometro']
-      # contador = 0
-      # for i in potenciometro1:
-      #    if i == ",":
-      #       break
-      #    contador += 1
-      # potenciometro = potenciometro1[0:contador]
-      # botao = potenciometro1[-1]
-
-      # potenciometro2= status['BOTAO']
+      potenciometro = status['LED']
+      botao = status['BOTAO']
+      ts = status['TS']
+      ip = status['IP']
+      
       return render_template("status.html", status = status)
    else:
       return jsonify({'Potenciometro' : potenciometro, 'Botao': botao, 'Time Stamp (TS)': ts, 'ID':ip}), 200
